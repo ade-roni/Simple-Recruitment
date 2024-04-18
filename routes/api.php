@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -35,7 +36,7 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::delete('/{id}', 'destroy');
 });
 
-Route::controller(RoleController::class)->prefix('role')->group(function () {
+Route::controller(RoleController::class)->middleware('auth')->prefix('role')->group(function () {
     Route::get('/', 'index');
     Route::get('/{id}', 'detail');
     Route::post('/', 'create');
@@ -62,4 +63,14 @@ Route::controller(PicJadwalController::class)->prefix('pic-jadwal')->group(funct
     Route::post('/', 'store');
     Route::put('/{id}', 'store');
     Route::delete('/{id}', 'hapus');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
 });
